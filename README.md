@@ -303,3 +303,149 @@ public class BirdHandler
 - **Without LSP:** Penguin inherits Fly method from Bird, but overrides it to throw an exception, which violates LSP because a Penguin cannot be used as a Bird in a context expecting a flying bird.
 - **With LSP:** Penguin does not implement the Fly method. Instead, we use an interface IFlyable for birds that can fly. This way, MakeBirdFly only deals with objects that can actually fly, ensuring that any subclass can be substituted without breaking the program.
 
+
+**========================= Interface Segregation Principle =================================**
+
+This Principle states Clients should not be forced to implement any methods they don’t use. Rather than one fat interface, numerous little interfaces are preferred based on groups of methods, with each interface serving one submodule.
+
+Let us break down the above definition into two parts.
+
+1. First, no class should be forced to implement any method(s) of an interface they don’t use.
+2. Secondly, instead of creating large or, you can say, fat interfaces, create multiple smaller interfaces so that the clients only think about the methods that they want to implement.
+
+**Without ISP**
+
+```
+    public interface IPrinterTasks
+    {
+        void Print(string PrintContent);
+        void Scan(string ScanContent);
+        void Fax(string FaxContent);
+        void PrintDuplex(string PrintDuplexContent);
+    }
+
+    public class HPLaserJetPrinter : IPrinterTasks
+    {
+        public void Print(string PrintContent)
+        {
+            Console.WriteLine("Print Done");
+        }
+
+        public void Scan(string ScanContent)
+        {
+            Console.WriteLine("Scan content");
+        }
+
+        public void Fax(string FaxContent)
+        {
+            Console.WriteLine("Fax content");
+        }
+
+        public void PrintDuplex(string PrintDuplexContent)
+        {
+            Console.WriteLine("Print Duplex content");
+        }
+    }
+
+    class LiquidInkjetPrinter : IPrinterTasks
+    {
+        public void Print(string PrintContent)
+        {
+            Console.WriteLine("Print Done");
+        }
+
+        public void Scan(string ScanContent)
+        {
+            Console.WriteLine("Scan content");
+        }
+
+        public void Fax(string FaxContent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrintDuplex(string PrintDuplexContent)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+```
+
+**With ISP**
+
+
+```
+    public interface IPrinterTasks
+    {
+        void Print(string PrintContent);
+        void Scan(string ScanContent);
+    }
+
+    interface IFaxTasks
+    {
+        void Fax(string content);
+    }
+
+    interface IPrintDuplexTasks
+    {
+        void PrintDuplex(string content);
+    }
+
+
+    public class HPLaserJetPrinter : IPrinterTasks, IFaxTasks, IPrintDuplexTasks
+    {
+        public void Print(string PrintContent)
+        {
+            Console.WriteLine("Print Done");
+        }
+        public void Scan(string ScanContent)
+        {
+            Console.WriteLine("Scan content");
+        }
+        public void Fax(string FaxContent)
+        {
+            Console.WriteLine("Fax content");
+        }
+        public void PrintDuplex(string PrintDuplexContent)
+        {
+            Console.WriteLine("Print Duplex content");
+        }
+    }
+
+
+    class LiquidInkjetPrinter : IPrinterTasks
+    {
+        public void Print(string PrintContent)
+        {
+            Console.WriteLine("Print Done");
+        }
+        public void Scan(string ScanContent)
+        {
+            Console.WriteLine("Scan content");
+        }
+    }
+
+
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            //Using HPLaserJetPrinter we can access all Printer Services
+            HPLaserJetPrinter hPLaserJetPrinter = new HPLaserJetPrinter();
+            hPLaserJetPrinter.Print("Printing");
+            hPLaserJetPrinter.Scan("Scanning");
+            hPLaserJetPrinter.Fax("Faxing");
+            hPLaserJetPrinter.PrintDuplex("PrintDuplex");
+
+            //Using LiquidInkjetPrinter we can only Access Print and Scan Printer Services
+            LiquidInkjetPrinter liquidInkjetPrinter = new LiquidInkjetPrinter();
+            liquidInkjetPrinter.Print("Printing");
+            liquidInkjetPrinter.Scan("Scanning");
+
+            Console.ReadKey();
+        }
+    }
+
+    
+```
