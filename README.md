@@ -11,6 +11,7 @@ The SOLID Design Principles in C# help us solve most software design problems. T
 
 
 **========Single Responsibility Principle =================================**
+
 The SRP states that a class should have only one reason to change, meaning it should have only one job or responsibility.
 
 Real-Time Example of Single Responsibility Principle in C#: Banking System
@@ -106,5 +107,117 @@ A cleaner approach would separate transaction management from statement printing
             Console.ReadKey();
         }
     }
+
+```
+
+
+**===== Open Closed Principle==================================**
+
+This principle promotes the idea that you should be able to add new functionality to a component without altering its existing code.
+
+The Open for Extension means we need to design the software modules/classes/functions in a way that the new responsibilities or functionalities can be added easily when new requirements come. On the other hand, Closed for Modification means we should not modify the class/module/function until we find some bugs. 
+
+That means we should not edit the code of a method (until we find some bugs); instead, we should use polymorphism or other techniques to add new functionality by writing new code.
+
+
+1. The easiest way to implement the Open-Closed Principle in C# is to add new functionalities by creating new derived classes, which should be inherited from the original base class.
+2. Another way is to allow the client to access the original class with an abstract interface.
+
+Let’s take an example of a notification system where a user can be notified through various channels.
+
+Without OCP:
+
+```
+using System;
+namespace OCPDemo
+{
+    public enum NotificationChannel
+    {
+        Email,
+        SMS
+    }
+
+    public class NotificationSender
+    {
+        public void SendNotification(NotificationChannel channel, string message)
+        {
+            switch (channel)
+            {
+                case NotificationChannel.Email:
+                    Console.WriteLine($"Sending Email: {message}");
+                    break;
+                case NotificationChannel.SMS:
+                    Console.WriteLine($"Sending SMS: {message}");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+}
+
+```
+
+With OCP
+
+```
+using System;
+namespace OCPDemo
+{
+    //Start with an interface
+    public interface INotificationChannel
+    {
+        void Send(string message);
+    }
+
+    //Implement this interface for each channel
+    public class EmailNotification : INotificationChannel
+    {
+        public void Send(string message)
+        {
+            Console.WriteLine($"Sending Email: {message}");
+        }
+    }
+
+    public class SMSNotification : INotificationChannel
+    {
+        public void Send(string message)
+        {
+            Console.WriteLine($"Sending SMS: {message}");
+        }
+    }
+
+    //Modify the NotificationSender class to accept any INotificationChannel
+    public class NotificationSender
+    {
+        private readonly INotificationChannel _channel;
+
+        public NotificationSender(INotificationChannel channel)
+        {
+            _channel = channel;
+        }
+
+        public void SendNotification(string message)
+        {
+            _channel.Send(message);
+        }
+    }
     
+    //Testing the Open-Closed Principle
+    public class Program
+    {
+        public static void Main()
+        {
+            var emailChannel = new EmailNotification();
+            var sender = new NotificationSender(emailChannel);
+            sender.SendNotification("Hello via Email!");
+
+            var smsChannel = new SMSNotification();
+            sender = new NotificationSender(smsChannel);
+            sender.SendNotification("Hello via SMS!");
+
+            Console.ReadKey();
+        }
+    }
+}
 ```
