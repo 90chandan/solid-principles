@@ -447,5 +447,10 @@ Let us break down the above definition into two parts.
         }
     }
 
-    
+
 ```
+
+**============================Dependency Inversion Principle==================================================**
+
+The Dependency Inversion Principle (DIP) states that High-Level Modules/Classes should not depend on Low-Level Modules/Classes. Both should depend upon Abstractions (e.g., interfaces or abstract classes). Secondly, Abstractions should not depend upon Details. But Details should depend upon Abstractions.
+
