@@ -220,4 +220,86 @@ namespace OCPDemo
         }
     }
 }
+
 ```
+
+**=============================Liskov Substitution Principle ================================================**
+
+It states that objects of a superclass should be replaceable with objects of its subclasses without affecting the correctness of the program. That means a subclass should completely adhere to the behavior expected by the superclass. The Liskov Substitution Principle encourages a design where subclasses are substitutable for their base classes.
+
+In simple words, we can say that when we have Inheritance Relationships between two classes, then if we successfully replace the object/instance of a parent class with an object/instance of the child class without affecting the behavior of the base class instance, it is said to be in Liskov Substitution Principle.
+
+**Real-World Example without Liskov Substitution Principle**
+
+Here’s an example in C# that violates the LSP. Consider a scenario with a base class Bird and a derived class Penguin
+
+```
+public class Bird
+{
+    public virtual void Fly()
+    {
+        Console.WriteLine("Flying");
+    }
+}
+
+public class Penguin : Bird
+{
+    public override void Fly()
+    {
+        throw new NotImplementedException("Penguins can't fly!");
+    }
+}
+
+public class BirdHandler
+{
+    public void MakeBirdFly(Bird bird)
+    {
+        bird.Fly();
+    }
+}
+
+```
+In this example, a Penguin is a Bird, but Penguin cannot fly. When MakeBirdFly is called with a Penguin instance, it will throw an exception, violating the Liskov Substitution Principle.
+
+**Real-World Example with Liskov Substitution Principle**
+
+To adhere to the Liskov Substitution Principle, we can refactor the code so that Penguin is not forced to implement Fly. We introduce a new interface IFlyable for birds that can fly.
+
+```
+public interface IFlyable
+{
+    void Fly();
+}
+
+public class Bird
+{
+    // Common properties and methods for all birds
+}
+
+public class Sparrow : Bird, IFlyable
+{
+    public void Fly()
+    {
+        Console.WriteLine("Flying");
+    }
+}
+
+public class Penguin : Bird
+{
+    // Penguins can't fly, so no Fly method here
+}
+
+public class BirdHandler
+{
+    public void MakeBirdFly(IFlyable bird)
+    {
+        bird.Fly();
+    }
+}
+
+
+```
+
+- **Without LSP:** Penguin inherits Fly method from Bird, but overrides it to throw an exception, which violates LSP because a Penguin cannot be used as a Bird in a context expecting a flying bird.
+- **With LSP:** Penguin does not implement the Fly method. Instead, we use an interface IFlyable for birds that can fly. This way, MakeBirdFly only deals with objects that can actually fly, ensuring that any subclass can be substituted without breaking the program.
+
